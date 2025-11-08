@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Happy Birthday! 🎂</title>
+<style>
+  :root{
+    --bg1:#0f0f1a; --bg2:#111827; --accent:#ff6ad5; --accent2:#9b5cff;
+    --text:#f8f7ff; --muted:#b9b9c9; --gold:#ffcf6e; --pink:#ff9ed1;
+  }
+
+  /* Background gradient like the video */
+  body{
+    margin:0; font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    color:var(--text);
+    background: radial-gradient(1200px 600px at 20% 10%, #2a1240 0%, transparent 60%),
+                radial-gradient(1200px 600px at 80% 20%, #0d2b4e 0%, transparent 60%),
+                linear-gradient(180deg, var(--bg1), var(--bg2));
+    min-height:100svh; display:flex; align-items:center; justify-content:center;
+  }
+
+  .screen{max-width:1000px; width:clamp(300px, 92vw, 900px); text-align:center; padding:40px 16px; display:none;}
+  .screen.active{display:block; animation:fade .5s ease both}
+  @keyframes fade{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+
+  .card{
+    margin-inline:auto; width:min(760px, 92vw); background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:28px 22px; backdrop-filter: blur(6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  .title{font-size:clamp(28px, 6vw, 54px); font-weight:800; letter-spacing:.4px; margin:10px 0}
+  .subtitle{color:var(--muted); margin:.5rem 0 1.2rem}
+
+  .btn{
+    display:inline-flex; gap:.6rem; align-items:center; justify-content:center;
+    padding:.9rem 1.2rem; border-radius:999px; border:0; cursor:pointer; color:white;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    box-shadow:0 8px 20px rgba(155,92,255,.35); font-weight:700; font-size:1rem;
+  }
+  .btn.secondary{background:transparent; border:1px solid rgba(255,255,255,.18); box-shadow:none}
+  .btn:disabled{opacity:.6; cursor:not-allowed}
+
+  /* Balloons strip like the video footer */
+  .balloons{
+    display:grid; grid-auto-flow:column; grid-auto-columns:42px; gap:10px; justify-content:center; margin-top:24px;
+  }
+  .balloon{width:42px; aspect-ratio:1; border-radius:50%; filter:brightness(1.1); opacity:.95}
+  .balloon:nth-child(5n+1){background:#ff7aa2}
+  .balloon:nth-child(5n+2){background:#ffd166}
+  .balloon:nth-child(5n+3){background:#7bd6ff}
+  .balloon:nth-child(5n+4){background:#b5ff7d}
+  .balloon:nth-child(5n+5){background:#d6a3ff}
+
+  /* Cake area */
+  .cake-wrap{display:grid; place-items:center; margin-top:12px}
+  svg{max-width:520px; width:min(92vw, 520px)}
+  .cake-title{font-size:clamp(24px, 5vw, 44px); font-weight:900; margin:14px 0 6px}
+  .name-line{font-weight:800; color:#ffb9e5}
+
+  /* Modal letter */
+  dialog{
+    width:min(760px, 92vw); border:1px solid rgba(255,255,255,.15); border-radius:18px; padding:0;
+    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    color:var(--text)
+  }
+  dialog::backdrop{background:rgba(0,0,0,.55)}
+  .dlg-head{padding:18px 20px; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:center; justify-content:space-between}
+  .dlg-body{padding:18px 20px}
+  textarea{
+    width:100%; min-height:220px; resize:vertical; background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.15);
+    border-radius:12px; color:var(--text); padding:14px; font-size:1rem
+  }
+  .small{font-size:.9rem; color:var(--muted)}
+
+  /* Preparing screen dot */
+  .dot{width:12px; height:12px; border-radius:50%; background:#ff5e9c; margin:14px auto; animation:pulse 1.1s infinite}
+  @keyframes pulse{0%{transform:scale(1); opacity:.6}50%{transform:scale(1.35); opacity:1}100%{transform:scale(1); opacity:.6}}
+
+  /* Little glow around flames */
+  .flame{filter:drop-shadow(0 0 8px rgba(255,210,120,.9))}
+  .hidden{opacity:0}
+</style>
+</head>
+<body>
+
+  <!-- Screen 1: Preparing -->
+  <section id="s1" class="screen active">
+    <div class="card">
+      <div class="dot"></div>
+      <div class="title">Preparing Something Special</div>
+      <div class="subtitle">For someone very special…</div>
+    </div>
+    <div class="balloons" aria-hidden="true"></div>
+  </section>
+
+  <!-- Screen 2: CTA -->
+  <section id="s2" class="screen">
+    <div class="card">
+      <div style="font-size:46px">🎁</div>
+      <div class="title">Time to Celebrate!</div>
+      <div class="subtitle">The countdown is over. Let’s celebrate! ✨</div>
+      <button id="startBtn" class="btn">🎉 Let’s Celebrate</button>
+      <div class="small" style="margin-top:10px">Click to start the magic.</div>
+    </div>
+    <div class="balloons" aria-hidden="true"></div>
+  </section>
+
+  <!-- Screen 3: Birthday -->
+  <section id="s3" class="screen">
+    <div class="cake-wrap">
+      <div class="title cake-title">Happy Birthday</div>
+      <div class="name-line" id="recipientName">To someone amazing 💖</div>
+
+      <!-- 3-layer pink cake with static sprinkles + 5 candles -->
+      <svg viewBox="0 0 520 520" role="img" aria-label="Birthday cake with candles">
+        <!-- plate -->
+        <ellipse cx="260" cy="420" rx="180" ry="24" fill="#1c2333" opacity=".55"/>
+        <!-- layers (bottom to top) -->
+        <g id="cake">
+          <!-- bottom layer -->
+          <rect x="90" y="330" width="340" height="80" rx="18" fill="#ffb3d9"/>
+          <rect x="90" y="330" width="340" height="40" rx="18" fill="#ff8fc8"/>
+          <!-- sprinkles (static) -->
+          <g fill="#fff">
+            <circle cx="130" cy="355" r="3"/><circle cx="170" cy="372" r="3"/>
+            <circle cx="210" cy="346" r="3"/><circle cx="260" cy="370" r="3"/>
+            <circle cx="300" cy="350" r="3"/><circle cx="340" cy="374" r="3"/>
+            <circle cx="380" cy="352" r="3"/>
+          </g>
+
+          <!-- middle layer -->
+          <rect x="130" y="260" width="260" height="70" rx="16" fill="#ffc1e3"/>
+          <rect x="130" y="260" width="260" height="36" rx="16" fill="#ff9ed1"/>
+          <g fill="#fff">
+            <circle cx="160" cy="283" r="2.8"/><circle cx="200" cy="298" r="2.8"/>
+            <circle cx="240" cy="278" r="2.8"/><circle cx="280" cy="296" r="2.8"/>
+            <circle cx="320" cy="280" r="2.8"/><circle cx="360" cy="294" r="2.8"/>
+          </g>
+
+          <!-- top layer -->
+          <rect x="175" y="205" width="170" height="55" rx="14" fill="#ffd0ea"/>
+          <rect x="175" y="205" width="170" height="28" rx="14" fill="#ffb9e5"/>
+          <g fill="#fff">
+            <circle cx="200" cy="226" r="2.6"/><circle cx="235" cy="219" r="2.6"/>
+            <circle cx="270" cy="233" r="2.6"/><circle cx="305" cy="220" r="2.6"/>
+            <circle cx="340" cy="229" r="2.6"/>
+          </g>
+        </g>
+
+        <!-- candles -->
+        <g id="candles">
+          <!-- parameters: body + wick + flame (flame group will be toggled) -->
+          <!-- candle 1 -->
+          <g transform="translate(200,145)">
+            <rect x="0" y="0" width="18" height="60" rx="6" fill="#fff"/>
+            <path d="M0 16 l18 0" stroke="#ff9ed1" stroke-width="4" />
+            <path d="M0 36 l18 0" stroke="#ff9ed1" stroke-width="4" />
+            <rect x="8" y="-8" width="2" height="12" fill="#333"/>
+            <g class="flame" data-flame>
+              <ellipse cx="9" cy="-14" rx="7" ry="10" fill="#ffd26e"/>
+              <ellipse cx="9" cy="-16" rx="4" ry="6" fill="#ff8a00"/>
+            </g>
+          </g>
+          <!-- candle 2 -->
+          <g transform="translate(235,138)">
+            <rect x="0" y="0" width="18" height="67" rx="6" fill="#fff"/>
+            <path d="M0 20 l18 0" stroke="#a2d2ff" stroke-width="4" />
+            <path d="M0 44 l18 0" stroke="#a2d2ff" stroke-width="4" />
+            <rect x="8" y="-8" width="2" height="12" fill="#333"/>
+            <g class="flame" data-flame>
+              <ellipse cx="9" cy="-14" rx="7" ry="10" fill="#ffd26e"/>
+              <ellipse cx="9" cy="-16" rx="4" ry="6" fill="#ff8a00"/>
+            </g>
+          </g>
+          <!-- candle 3 -->
+          <g transform="translate(260,135)">
+            <rect x="0" y="0" width="18" height="70" rx="6" fill="#fff"/>
+            <path d="M0 22 l18 0" stroke="#ffd166" stroke-width="4" />
+            <path d="M0 46 l18 0" stroke="#ffd166" stroke-width="4" />
+            <rect x="8" y="-8" width="2" height="12" fill="#333"/>
+            <g class="flame" data-flame>
+              <ellipse cx="9" cy="-14" rx="7" ry="10" fill="#ffd26e"/>
+              <ellipse cx="9" cy="-16" rx="4" ry="6" fill="#ff8a00"/>
+            </g>
+          </g>
+          <!-- candle 4 -->
+          <g transform="translate(285,138)">
+            <rect x="0" y="0" width="18" height="67" rx="6" fill="#fff"/>
+            <path d="M0 20 l18 0" stroke="#ff9ed1" stroke-width="4" />
+            <path d="M0 44 l18 0" stroke="#ff9ed1" stroke-width="4" />
+            <rect x="8" y="-8" width="2" height="12" fill="#333"/>
+            <g class="flame" data-flame>
+              <ellipse cx="9" cy="-14" rx="7" ry="10" fill="#ffd26e"/>
+              <ellipse cx="9" cy="-16" rx="4" ry="6" fill="#ff8a00"/>
+            </g>
+          </g>
+          <!-- candle 5 -->
+          <g transform="translate(320,145)">
+            <rect x="0" y="0" width="18" height="60" rx="6" fill="#fff"/>
+            <path d="M0 16 l18 0" stroke="#a2d2ff" stroke-width="4" />
+            <path d="M0 36 l18 0" stroke="#a2d2ff" stroke-width="4" />
+            <rect x="8" y="-8" width="2" height="12" fill="#333"/>
+            <g class="flame" data-flame>
+              <ellipse cx="9" cy="-14" rx="7" ry="10" fill="#ffd26e"/>
+              <ellipse cx="9" cy="-16" rx="4" ry="6" fill="#ff8a00"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px">
+        <button id="micBtn" class="btn secondary">🎙️ Start mic</button>
+        <button id="blowBtn" class="btn secondary" title="Fallback if mic blocked">💨 Tap to blow</button>
+        <button id="letterBtn" class="btn">💌 A Special Letter</button>
+      </div>
+
+      <div id="micHint" class="small" style="margin-top:10px">
+        Tip: allow microphone access, then blow gently toward it.
+      </div>
+    </div>
+
+    <div class="balloons" aria-hidden="true"></div>
+  </section>
+
+  <!-- Letter modal -->
+  <dialog id="letterDlg">
+    <div class="dlg-head">
+      <strong>💌 A Special Letter</strong>
+      <form method="dialog"><button class="btn secondary">Close</button></form>
+    </div>
+    <div class="dlg-body">
+      <p class="small" style="margin-top:0">Edit your message below. It saves in this tab only.</p>
+      <textarea id="letterText">Happy Birthday! 🎉
+
+Your smile lights up every room and your kindness makes the world better. Today is all about you — wishing you joy, love and lots of cake! 🍰
+
+With all my love,
+— Me 💖</textarea>
+      <div style="display:flex; gap:10px; margin-top:12px; justify-content:flex-end">
+        <button id="copyLetter" class="btn secondary">Copy</button>
+        <form method="dialog"><button class="btn">Done</button></form>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+  // --- Screens flow like the video ---
+  const s1 = document.getElementById('s1'), s2 = document.getElementById('s2'), s3 = document.getElementById('s3');
+  const startBtn = document.getElementById('startBtn');
+  const flames = [...document.querySelectorAll('[data-flame]')];
+  const micBtn = document.getElementById('micBtn');
+  const blowBtn = document.getElementById('blowBtn');
+  const letterBtn = document.getElementById('letterBtn');
+  const dlg = document.getElementById('letterDlg');
+  const copyLetter = document.getElementById('copyLetter');
+
+  // balloons row
+  document.querySelectorAll('.balloons').forEach(row=>{
+    for(let i=0;i<18;i++){ const b=document.createElement('div'); b.className='balloon'; row.appendChild(b); }
+  });
+
+  // screen timers
+  setTimeout(()=>{ s1.classList.remove('active'); s2.classList.add('active'); }, 1700);
+  startBtn.addEventListener('click', ()=>{ s2.classList.remove('active'); s3.classList.add('active'); });
+
+  // --- Letter modal ---
+  letterBtn.addEventListener('click', ()=> dlg.showModal());
+  copyLetter.addEventListener('click', async ()=>{
+    const txt = document.getElementById('letterText').value;
+    try { await navigator.clipboard.writeText(txt); copyLetter.textContent='Copied!'; setTimeout(()=>copyLetter.textContent='Copy', 1200);} catch(e){}
+  });
+
+  // --- Candle control ---
+  let blown = false;
+  function blowOut(){
+    if (blown) return;
+    blown = true;
+    flames.forEach(f=>f.classList.add('hidden'));
+    document.getElementById('micHint').textContent = 'Make a wish ✨';
+    stopMic();
+  }
+  blowBtn.addEventListener('click', blowOut);
+
+  // --- Microphone / blowing detection ---
+  let stream, audioCtx, analyser, data, raf;
+  const THRESHOLD = 10; // tweak if needed (lower = easier)
+  async function startMic(){
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:true, noiseSuppression:true } });
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      data = new Uint8Array(analyser.fftSize);
+      src.connect(analyser);
+      loop();
+      micBtn.textContent = '🎙️ Mic listening…';
+      micBtn.disabled = true;
+      document.getElementById('micHint').textContent = 'Blow toward your mic to put out the candles.';
+    }catch(err){
+      document.getElementById('micHint').textContent = 'Could not access microphone. Use the 💨 Tap to blow button.';
+      console.error(err);
+    }
+  }
+  function stopMic(){
+    cancelAnimationFrame(raf);
+    if(stream){ stream.getTracks().forEach(t=>t.stop()); }
+    if(audioCtx) audioCtx.close();
+  }
+  function loop(){
+    analyser.getByteTimeDomainData(data);
+    // RMS amplitude (0..1)
+    let sum=0; for(let i=0;i<data.length;i++){ const v=(data[i]-128)/128; sum += v*v; }
+    const rms = Math.sqrt(sum/data.length);
+    const level = Math.round(rms*100*2); // ~0..200
+    if(level > THRESHOLD) blowOut();
+    raf = requestAnimationFrame(loop);
+  }
+  micBtn.addEventListener('click', startMic);
+
+  // restore flames if you reload
+  window.addEventListener('pageshow', ()=>{ blown=false; flames.forEach(f=>f.classList.remove('hidden')); });
+</script>
+</body>
+</html>
