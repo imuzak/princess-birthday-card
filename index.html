@@ -285,7 +285,7 @@ With all my love,
 
   // --- Microphone / blowing detection ---
   let stream, audioCtx, analyser, data, raf;
-  const THRESHOLD = 10; // tweak if needed (lower = easier)
+  const THRESHOLD = 30; // tweak if needed (lower = easier)
   async function startMic(){
     try{
       stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation:true, noiseSuppression:true } });
